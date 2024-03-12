@@ -285,11 +285,13 @@ public class Amazon {
                 System.out.println("7. View 5 Popular Items");
                 System.out.println("8. View 5 Popular Customers");
                 System.out.println("9. Place Product Supply Request to Warehouse");
+                System.out.println("10. View All Orders");
 
                 //the following functionalities basically used by admins
-                System.out.println("10. View all users");
-                System.out.println("11. Update user");
-                System.out.println("12. Delete user");
+                System.out.println("11. View all users");
+                System.out.println("12. Update user");
+                System.out.println("13. Delete user");
+
 
 
                 System.out.println(".........................");
@@ -304,9 +306,10 @@ public class Amazon {
                    case 7: viewPopularProducts(esql,authorisedUser); break;
                    case 8: viewPopularCustomers(esql, authorisedUser); break;
                    case 9: placeProductSupplyRequests(esql, authorisedUser); break;
-                   case 10: viewAllUsers(esql, authorisedUser); break;
-                   case 11: updateUser(esql, authorisedUser); break;
-                   case 12: deleteUser(esql, authorisedUser); break;
+                   case 10: viewAllOrders(esql, authorisedUser); break;
+                   case 11: viewAllUsers(esql, authorisedUser); break;
+                   case 12: updateUser(esql, authorisedUser); break;
+                   case 13: deleteUser(esql, authorisedUser); break;
 
                    case 20: usermenu = false; break;
                    default : System.out.println("Unrecognized choice!"); break;
@@ -699,6 +702,24 @@ public class Amazon {
       }
       return true;
    }
+   public static void viewAllOrders(Amazon esql, String authorisedUser)
+   {
+      String viewOrderQuery = "SELECT o.ordernumber, u.name, s.storeid, o.productname, o.ordertime, o.unitsordered FROM orders o, store s, users u WHERE s.managerid = "+authorisedUser+" AND s.storeid = o.storeid AND u.userid = o.customerid;";
+      try {
+         List<List<String>> orders = esql.executeQueryAndReturnResult(viewOrderQuery);
+         if (orders.size() == 0){
+            System.out.println("No orders found");
+         }
+         for (int i = 0; i < orders.size(); ++i)
+         {
+            System.out.println("Order ID: " + orders.get(i).get(0) + " Customer Name: " + orders.get(i).get(1) + " Store ID: " + orders.get(i).get(2) + " Product Name: " + orders.get(i).get(3) + " Order Time: " + orders.get(i).get(4) + " Number of Units: " + orders.get(i).get(5));
+         }
+      }
+      catch(Exception e){
+         System.err.println (e.getMessage());
+      }
+      return ;
+   }
    public static void viewAllUsers(Amazon esql, String authorisedUser)
    {
       if(!checkAdminPermission( esql, authorisedUser))
@@ -745,6 +766,8 @@ public class Amazon {
          System.err.println(e.getMessage());
       }
    }
+       
+  
    public static void deleteUser(Amazon esql, String authorisedUser) {
       if(!checkAdminPermission( esql, authorisedUser))
          return;
