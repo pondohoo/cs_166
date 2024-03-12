@@ -419,7 +419,23 @@ public class Amazon {
          System.err.println (e.getMessage());
       }
    }
-   public static void viewProducts(Amazon esql) {}
+   public static void viewProducts(Amazon esql) {
+      try {
+         System.out.println("Enter the storeID of a store to view its products");
+         int storeId = readChoice();
+         List<List<String>> storeProducts = esql.executeQueryAndReturnResult(String.format("SELECT productName, numberOfUnits, pricePerUnit FROM Product WHERE storeID = '" + storeId + "' ;"));
+         if (storeProducts.size() == 0){
+            System.out.println("No products found for storeID " + storeId);
+         }
+         for (int i = 0; i < storeProducts.size(); ++i)
+         {
+            System.out.println("Product Name: " + storeProducts.get(i).get(0) + " Number of Units: " + storeProducts.get(i).get(1) + " Price per Unit: " + storeProducts.get(i).get(2));
+         }
+      }
+      catch(Exception e){
+         System.err.println (e.getMessage());
+      }
+   }
    public static void placeOrder(Amazon esql) {}
    public static void viewRecentOrders(Amazon esql) {}
    public static void updateProduct(Amazon esql) {}
