@@ -288,7 +288,7 @@ public class Amazon {
 
                 //the following functionalities basically used by admins
                 System.out.println("10. View all users");
-                System.out.println("12. Update user");
+                System.out.println("11. Update user");
 
 
                 System.out.println(".........................");
@@ -304,6 +304,7 @@ public class Amazon {
                    case 8: viewPopularCustomers(esql, authorisedUser); break;
                    case 9: placeProductSupplyRequests(esql, authorisedUser); break;
                    case 10: viewAllUsers(esql, authorisedUser); break;
+                   case 11: updateUser(esql, authorisedUser); break;
 
                    case 20: usermenu = false; break;
                    default : System.out.println("Unrecognized choice!"); break;
@@ -668,14 +669,14 @@ public class Amazon {
          System.err.println (e.getMessage());
       }
    }
-   public static void viewAllUsers(Amazon esql, String authorisedUser)
+   public static boolean checkAdminPermission(Amazon esql, String authorisedUser)
    {
       String checkTypeQuery = "SELECT type FROM users WHERE userid = "+authorisedUser;
       try {
          List<List<String>> type = esql.executeQueryAndReturnResult(checkTypeQuery);
          if (type.size() == 0){
             System.out.println("No users found");
-            return;
+            return false;
          }
          for (int i = 0; i < type.size(); ++i)
          {
@@ -683,13 +684,20 @@ public class Amazon {
             if(!type.get(i).get(0).contains("admin"))
             {
                System.out.println("You need admin permission to view all users");
-               return;
+               return false;
             }
          }
       }
       catch(Exception e){
          System.err.println (e.getMessage());
+         return false;
       }
+      return true;
+   }
+   public static void viewAllUsers(Amazon esql, String authorisedUser)
+   {
+      if(!checkAdminPermission( esql, authorisedUser))
+         return;
       String viewUserQuery = "SELECT * FROM users;";
       try {
          List<List<String>> users = esql.executeQueryAndReturnResult(viewUserQuery);
@@ -705,6 +713,32 @@ public class Amazon {
          System.err.println (e.getMessage());
       }
       return ;
+   }
+   public static void updateUser(Amazon esql, String authorisedUser) {
+      if(!checkAdminPermission( esql, authorisedUser))
+         return;
+      try{
+         System.out.println("Enter the userid of a user to update");
+         int userid = readChoice();
+         List<List<String>> store = esql.executeQueryAndReturnResult(String.format("SELECT * FROM users WHERE userid = %d;", userid));
+         if (store.size() == 0){
+            System.out.println("user not found");
+            return;
+         }
+         System.out.println("Enter the new name of this user");
+         String name = in.readLine();
+         System.out.println("Enter the new latitude");
+         String latitude = in.readLine();
+         System.out.println("Enter the new longitude");
+         String longitude = in.readLine();
+         System.out.println("Enter the new type");
+         String type = in.readLine();
+         String query = String.format("UPDATE users SET name = '%s', latitude = %s, longitude = %s, type = '%s' WHERE userid = %s", name, latitude, longitude, type, userid);
+         esql.executeUpdate(query);
+      }
+      catch(Exception e){
+         System.err.println(e.getMessage());
+      }
    }
 
 }//end Amazon
