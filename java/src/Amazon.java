@@ -286,6 +286,11 @@ public class Amazon {
                 System.out.println("8. View 5 Popular Customers");
                 System.out.println("9. Place Product Supply Request to Warehouse");
 
+                //the following functionalities basically used by admins
+                System.out.println("10. View all users");
+                System.out.println("12. Update user");
+
+
                 System.out.println(".........................");
                 System.out.println("20. Log out");
                 switch (readChoice()){
@@ -298,6 +303,7 @@ public class Amazon {
                    case 7: viewPopularProducts(esql,authorisedUser); break;
                    case 8: viewPopularCustomers(esql, authorisedUser); break;
                    case 9: placeProductSupplyRequests(esql, authorisedUser); break;
+                   case 10: viewAllUsers(esql, authorisedUser); break;
 
                    case 20: usermenu = false; break;
                    default : System.out.println("Unrecognized choice!"); break;
@@ -661,6 +667,44 @@ public class Amazon {
    } catch(Exception e){
          System.err.println (e.getMessage());
       }
+   }
+   public static void viewAllUsers(Amazon esql, String authorisedUser)
+   {
+      String checkTypeQuery = "SELECT type FROM users WHERE userid = "+authorisedUser;
+      try {
+         List<List<String>> type = esql.executeQueryAndReturnResult(checkTypeQuery);
+         if (type.size() == 0){
+            System.out.println("No users found");
+            return;
+         }
+         for (int i = 0; i < type.size(); ++i)
+         {
+
+            if(!type.get(i).get(0).contains("admin"))
+            {
+               System.out.println("You need admin permission to view all users");
+               return;
+            }
+         }
+      }
+      catch(Exception e){
+         System.err.println (e.getMessage());
+      }
+      String viewUserQuery = "SELECT * FROM users;";
+      try {
+         List<List<String>> users = esql.executeQueryAndReturnResult(viewUserQuery);
+         if (users.size() == 0){
+            System.out.println("No users found");
+         }
+         for (int i = 0; i < users.size(); ++i)
+         {
+            System.out.println(String.format("User ID: "+users.get(i).get(0)+" \tName: "+users.get(i).get(1)+"\tlatitude: "+users.get(i).get(3)+"\tlongitude"+users.get(i).get(4)+"\ttype: "+users.get(i).get(5)));
+         }
+      }
+      catch(Exception e){
+         System.err.println (e.getMessage());
+      }
+      return ;
    }
 
 }//end Amazon
