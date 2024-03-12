@@ -530,7 +530,7 @@ public class Amazon {
          }
          for (int i = 0; i < recentOrders.size(); ++i)
          {
-            System.out.println("Order ID: " + recentOrders.get(i).get(0) + " Customer Name: " + recentOrders.get(i).get(1) + " Store ID: " + recentOrders.get(i).get(2) + " Product Name: " + recentOrders.get(i).get(3) + " Order Time: " + recentOrders.get(i).get(4) + " Number of Units: " + recentOrders.get(i).get(5));
+            System.out.println("Order ID: " + recentOrders.get(i).get(0) + " Customer ID: " + recentOrders.get(i).get(1) + " Store ID: " + recentOrders.get(i).get(2) + " Product Name: " + recentOrders.get(i).get(3) + " Order Time: " + recentOrders.get(i).get(4) + " Number of Units: " + recentOrders.get(i).get(5));
          }
       }
       catch(Exception e){
