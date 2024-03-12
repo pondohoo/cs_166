@@ -669,13 +669,29 @@ public class Amazon {
          System.out.println("Enter the warehouseID of the warehouse to request from");
          int warehouseId = readChoice();
 
+         String checkProduct = String.format("SELECT EXISTS(SELECT * FROM product WHERE productname='%s');", productName);
+         List<List<String>> productExists = esql.executeQueryAndReturnResult(checkProduct);
+         if (productExists.get(0).get(0).equals("f"))
+         {
+            System.out.println("❌ product doesn't exist");
+            return;
+         }
+         String checkWarehouse = String.format("SELECT EXISTS(SELECT * FROM warehouse WHERE warehouseid='%d');", warehouseId);
+         List<List<String>> warehouseExists = esql.executeQueryAndReturnResult(checkWarehouse);
+         if (warehouseExists.get(0).get(0).equals("f"))
+         {
+            System.out.println("❌ warehouse doesn't exist");
+            return;
+         }
          String updateQuery = String.format("INSERT INTO ProductSupplyRequests (managerID, warehouseID, storeID, productName, unitsRequested) VALUES (%s, %d, %d, '%s', %d)", authorisedUser, warehouseId, storeId, productName, numberOfUnits);
          esql.executeUpdate(updateQuery);
          updateQuery = String.format("UPDATE Product SET numberOfUnits = numberOfUnits + %d WHERE storeID = %d AND productName = '%s'", numberOfUnits, storeId, productName);
          esql.executeUpdate(updateQuery);
-   } catch(Exception e){
-         System.err.println (e.getMessage());
+      } catch(Exception e){
+         System.err.println ("❌"+e.getMessage());
+         return;
       }
+      System.out.println("✅ product request placed!!!");
    }
    public static boolean checkAdminPermission(Amazon esql, String authorisedUser)
    {
@@ -683,7 +699,7 @@ public class Amazon {
       try {
          List<List<String>> type = esql.executeQueryAndReturnResult(checkTypeQuery);
          if (type.size() == 0){
-            System.out.println("No users found");
+            System.out.println("❌ No users found");
             return false;
          }
          for (int i = 0; i < type.size(); ++i)
@@ -691,7 +707,7 @@ public class Amazon {
 
             if(!type.get(i).get(0).contains("admin"))
             {
-               System.out.println("You need admin permission for this action");
+               System.out.println("❌ You need admin permission for this action");
                return false;
             }
          }
