@@ -419,18 +419,20 @@ public class Amazon {
          double userLat = Double.parseDouble(userCoords.get(0).get(0));
          double userLong = Double.parseDouble(userCoords.get(0).get(1));
          double maximumDistance = 30.0/69.0; // 1 degree latitude is 69 miles
+         boolean found = false;
          List<List<String>> storeCoords = esql.executeQueryAndReturnResult(String.format("SELECT storeID, latitude, longitude FROM Store;"));
          System.out.println("Stores within 30 miles: ");
-         if (storeCoords.size() == 0){
-            System.out.println("No stores found");
-         }
          for (int i = 0; i < storeCoords.size(); i++){
             double storeLat = Double.parseDouble(storeCoords.get(i).get(1));
             double storeLong = Double.parseDouble(storeCoords.get(i).get(2));
             double distance = esql.calculateDistance(userLat, userLong, storeLat, storeLong);
             if (distance <= maximumDistance){
                System.out.println("Store ID: " + storeCoords.get(i).get(0) + " Latitude: " + storeCoords.get(i).get(1) + " Longitude: " + storeCoords.get(i).get(2));
+               found = true;
             }
+         }
+         if (!found){
+            System.out.println("No stores found");
          }
       }
       catch(Exception e){
