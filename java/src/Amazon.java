@@ -289,6 +289,7 @@ public class Amazon {
                 //the following functionalities basically used by admins
                 System.out.println("10. View all users");
                 System.out.println("11. Update user");
+                System.out.println("12. Delete user");
 
 
                 System.out.println(".........................");
@@ -305,6 +306,7 @@ public class Amazon {
                    case 9: placeProductSupplyRequests(esql, authorisedUser); break;
                    case 10: viewAllUsers(esql, authorisedUser); break;
                    case 11: updateUser(esql, authorisedUser); break;
+                   case 12: deleteUser(esql, authorisedUser); break;
 
                    case 20: usermenu = false; break;
                    default : System.out.println("Unrecognized choice!"); break;
@@ -683,7 +685,7 @@ public class Amazon {
 
             if(!type.get(i).get(0).contains("admin"))
             {
-               System.out.println("You need admin permission to view all users");
+               System.out.println("You need admin permission for this action");
                return false;
             }
          }
@@ -734,6 +736,20 @@ public class Amazon {
          System.out.println("Enter the new type");
          String type = in.readLine();
          String query = String.format("UPDATE users SET name = '%s', latitude = %s, longitude = %s, type = '%s' WHERE userid = %s", name, latitude, longitude, type, userid);
+         esql.executeUpdate(query);
+      }
+      catch(Exception e){
+         System.err.println(e.getMessage());
+      }
+   }
+   public static void deleteUser(Amazon esql, String authorisedUser) {
+      if(!checkAdminPermission( esql, authorisedUser))
+         return;
+      try{
+         System.out.println("Enter the userid of a user to delete");
+         int userid = readChoice();
+
+         String query = String.format("DELETE FROM users WHERE userid = %s", userid);
          esql.executeUpdate(query);
       }
       catch(Exception e){
