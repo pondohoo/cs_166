@@ -289,7 +289,7 @@ public class Amazon {
                 System.out.println(".........................");
                 System.out.println("20. Log out");
                 switch (readChoice()){
-                   case 1: viewStores(esql); break;
+                   case 1: viewStores(esql,authorisedUser); break;
                    case 2: viewProducts(esql); break;
                    case 3: placeOrder(esql); break;
                    case 4: viewRecentOrders(esql); break;
@@ -398,7 +398,27 @@ public class Amazon {
 
 // Rest of the functions definition go in here
 
-   public static void viewStores(Amazon esql) {}
+   public static void viewStores(Amazon esql, String authorisedUser) {
+      try {
+         List<List<String>> userCoords = esql.executeQueryAndReturnResult(String.format("SELECT latitude, longitude FROM Users WHERE name = '" + authorisedUser + "' ;"));
+         double userLat = Double.parseDouble(userCoords.get(0).get(0));
+         double userLong = Double.parseDouble(userCoords.get(0).get(1));
+         double maximumDistance = 30.0/69.0; // 1 degree latitude is 69 miles
+         List<List<String>> storeCoords = esql.executeQueryAndReturnResult(String.format("SELECT storeID, latitude, longitude FROM Store;"));
+         System.out.println("Stores within 30 miles: ");
+         for (int i = 0; i < storeCoords.size(); i++){
+            double storeLat = Double.parseDouble(storeCoords.get(i).get(1));
+            double storeLong = Double.parseDouble(storeCoords.get(i).get(2));
+            double distance = esql.calculateDistance(userLat, userLong, storeLat, storeLong);
+            if (distance <= maximumDistance){
+               System.out.println("Store ID: " + storeCoords.get(i).get(0) + " Latitude: " + storeCoords.get(i).get(1) + " Longitude: " + storeCoords.get(i).get(2));
+            }
+         }
+      }
+      catch(Exception e){
+         System.err.println (e.getMessage());
+      }
+   }
    public static void viewProducts(Amazon esql) {}
    public static void placeOrder(Amazon esql) {}
    public static void viewRecentOrders(Amazon esql) {}
