@@ -547,8 +547,11 @@ public class Amazon {
             return;
          }
          if (!store.get(0).get(3).equals(authorisedUser)){
-            System.out.println("You must be the manager of " + storeId + " to update products");
-            return;
+            if(!checkAdminPermission(esql, authorisedUser))
+            {  
+               System.out.println("You must be the manager of " + storeId + " to update products");
+               return;
+            }
          }
          System.out.println("Enter the product name of a product to update");
          String productName = readStringChoice();
