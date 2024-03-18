@@ -736,8 +736,8 @@ public class Amazon {
          }
          String updateQuery = String.format("INSERT INTO ProductSupplyRequests (managerID, warehouseID, storeID, productName, unitsRequested) VALUES (%s, %d, %d, '%s', %d)", authorisedUser, warehouseId, storeId, productName, numberOfUnits);
          esql.executeUpdate(updateQuery);
-         updateQuery = String.format("UPDATE Product SET numberOfUnits = numberOfUnits + %d WHERE storeID = %d AND productName = '%s'", numberOfUnits, storeId, productName);
-         esql.executeUpdate(updateQuery);
+         // updateQuery = String.format("UPDATE Product SET numberOfUnits = numberOfUnits + %d WHERE storeID = %d AND productName = '%s'", numberOfUnits, storeId, productName);
+         // esql.executeUpdate(updateQuery);
       } catch(Exception e){
          System.err.println ("❌"+e.getMessage());
          return;
