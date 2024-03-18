@@ -430,7 +430,7 @@ public class Amazon {
          List<List<String>> userCoords = esql.executeQueryAndReturnResult(String.format("SELECT latitude, longitude FROM Users WHERE userID = %s;", authorisedUser));
          double userLat = Double.parseDouble(userCoords.get(0).get(0));
          double userLong = Double.parseDouble(userCoords.get(0).get(1));
-         double maximumDistance = 30.0/69.0; // 1 degree latitude is 69 miles
+         double maximumDistance = 30.0; 
          boolean found = false;
          List<List<String>> storeCoords = esql.executeQueryAndReturnResult(String.format("SELECT storeID, latitude, longitude FROM Store;"));
          System.out.println("Stores within 30 miles: ");
@@ -558,9 +558,9 @@ public class Amazon {
             return;
          }
          if (!store.get(0).get(3).equals(authorisedUser)){
-            if(!checkAdminPermission(esql, authorisedUser))
+            if(!checkManagerPermission(esql, authorisedUser))
             {  
-               System.out.println("❌ You must be the manager of " + storeId + " to update products");
+               System.out.println("❌ You must be the manager of store " + storeId + " to update products");
                return;
             }
          }
@@ -595,8 +595,8 @@ public class Amazon {
             System.out.println("❌ StoreID " + storeId + " does not exist");
             return;
          }
-         if (!store.get(0).get(3).equals(authorisedUser)){
-            System.out.println("❌ You must be the manager of " + storeId + " to view Product Updates Info");
+         if (!checkManagerPermission(esql, authorisedUser)){
+            System.out.println("❌ You must be the manager of store " + storeId + " to view Product Updates Info");
             return;
          }
          List<List<String>> recentUpdates = esql.executeQueryAndReturnResult(String.format("SELECT * FROM ProductUpdates WHERE storeID = '%s' ORDER BY updatedOn DESC LIMIT 5;", storeId));
@@ -624,8 +624,8 @@ public class Amazon {
             System.out.println("❌ StoreID " + storeId + " does not exist");
             return;
          } 
-         if (!store.get(0).get(3).equals(authorisedUser)){
-            System.out.println("❌ You must be the manager of " + storeId + " to view popular products");
+         if (!checkManagerPermission(esql, authorisedUser)){
+            System.out.println("❌ You must be the manager of store " + storeId + " to view popular products");
             return;
          }
          List<List<String>> popularProducts = esql.executeQueryAndReturnResult(String.format("SELECT productName, SUM(unitsOrdered) FROM Orders WHERE storeID = %d GROUP BY productName ORDER BY SUM(unitsOrdered) DESC LIMIT 5;", storeId));
@@ -650,8 +650,8 @@ public class Amazon {
             System.out.println("❌ StoreID " + storeId + " does not exist");
             return;
          } 
-         if (!store.get(0).get(3).equals(authorisedUser)){
-            System.out.println("❌ You must be the manager of " + storeId + " to view popular customers");
+         if (!checkManagerPermission(esql, authorisedUser)){
+            System.out.println("❌ You must be the manager of store " + storeId + " to view popular customers");
             return;
          }
          List<List<String>> popularCustomers = esql.executeQueryAndReturnResult(String.format("SELECT customerID, COUNT(*) FROM Orders WHERE storeID = %d GROUP BY customerID ORDER BY COUNT(*) DESC LIMIT 5;", storeId));
@@ -676,8 +676,8 @@ public class Amazon {
             System.out.println("❌ StoreID " + storeId + " does not exist");
             return;
          } 
-         if (!store.get(0).get(3).equals(authorisedUser)){
-            System.out.println("❌ You must be the manager of " + storeId + " to supply a product request");
+         if (!checkManagerPermission(esql, authorisedUser)){
+            System.out.println("❌ You must be the manager of store " + storeId + " to supply a product request");
             return;
          }
          System.out.println("Enter the product name of a product to request");
