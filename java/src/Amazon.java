@@ -863,12 +863,17 @@ public class Amazon {
          System.out.println("Enter the new name of this user");
          String name = in.readLine();
          System.out.println("Enter the new latitude");
-         String latitude = in.readLine();
+         int latitude = readChoice();
          System.out.println("Enter the new longitude");
-         String longitude = in.readLine();
+         int longitude = readChoice();
          System.out.println("Enter the new type");
          String type = in.readLine();
-         String query = String.format("UPDATE users SET name = '%s', latitude = %s, longitude = %s, type = '%s' WHERE userid = %s", name, latitude, longitude, type, userid);
+         if (!type.equals("customer") && !type.equals("manager") && !type.equals("admin"))
+         {
+            System.out.println("❌ type can only be admin, manager or customer");
+            return;
+         }
+         String query = String.format("UPDATE users SET name = '%s', latitude = %d, longitude = %d, type = '%s' WHERE userid = %s", name, latitude, longitude, type, userid);
          esql.executeUpdate(query);
       }
       catch(Exception e){
@@ -898,11 +903,11 @@ public class Amazon {
             return;
          }
          System.out.println("Enter the new numberOfUnits");
-         String numberOfUnits = in.readLine();
+         int numberOfUnits = readChoice();
          System.out.println("Enter the new pricePerUnit");
-         String pricePerUnit = in.readLine();
+         int pricePerUnit = readChoice();
    
-         String query = String.format("UPDATE Product SET numberOfUnits = '%s', pricePerUnit = '%s' WHERE storeid = '%s' AND productName = '%s'", numberOfUnits, pricePerUnit, storeId,productName);
+         String query = String.format("UPDATE Product SET numberOfUnits = '%s', pricePerUnit = %d WHERE storeid = %d AND productName = '%s'", numberOfUnits, pricePerUnit, storeId,productName);
          esql.executeUpdate(query);
       }
       catch(Exception e){
