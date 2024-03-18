@@ -480,7 +480,7 @@ public class Amazon {
          List<List<String>> userCoords = esql.executeQueryAndReturnResult(String.format("SELECT latitude, longitude FROM Users WHERE userID = '%s';", authorisedUser));
          double userLat = Double.parseDouble(userCoords.get(0).get(0));
          double userLong = Double.parseDouble(userCoords.get(0).get(1));
-         double maximumDistance = 30.0/69.0; // 1 degree latitude is 69 miles
+         double maximumDistance = 30.0; // 1 degree latitude is 69 miles
          List<List<String>> storeCoords = esql.executeQueryAndReturnResult(String.format("SELECT latitude, longitude FROM Store WHERE storeID = %d;", storeId));
          if (storeCoords.size() == 0){
             System.out.println("❌ StoreID " + storeId + " does not exist");
@@ -520,8 +520,8 @@ public class Amazon {
          esql.executeUpdate(query);
 
          // update product table
-         query = String.format("UPDATE Product SET numberOfUnits = numberOfUnits - %d WHERE storeID = %d AND productName = '%s'", numberOfUnits, storeId, productName);
-         esql.executeUpdate(query);
+         // query = String.format("UPDATE Product SET numberOfUnits = numberOfUnits - %d WHERE storeID = %d AND productName = '%s'", numberOfUnits, storeId, productName);
+         // esql.executeUpdate(query);
       }
       catch(Exception e){
          System.err.println (e.getMessage());
