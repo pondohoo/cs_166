@@ -280,7 +280,7 @@ public class Amazon {
                 System.out.println("4. View 5 recent orders");
 
                 //the following functionalities basically used by managers
-                System.out.println("5. Update Product");
+                System.out.println("5. Manager Update Product");
                 System.out.println("6. View 5 recent Product Updates Info");
                 System.out.println("7. View 5 Popular Items");
                 System.out.println("8. View 5 Popular Customers");
@@ -290,7 +290,7 @@ public class Amazon {
                 //the following functionalities basically used by admins
                 System.out.println("11. View all users");
                 System.out.println("12. Update user");
-                System.out.println("13. Delete user");
+                System.out.println("13. Admin Update Product");
 
 
 
@@ -301,7 +301,7 @@ public class Amazon {
                    case 2: viewProducts(esql); break;
                    case 3: placeOrder(esql,authorisedUser); break;
                    case 4: viewRecentOrders(esql,authorisedUser); break;
-                   case 5: updateProduct(esql, authorisedUser); break;
+                   case 5: managerUpdateProduct(esql, authorisedUser); break;
                    case 6: viewRecentUpdates(esql,authorisedUser); break;
                    case 7: viewPopularProducts(esql,authorisedUser); break;
                    case 8: viewPopularCustomers(esql, authorisedUser); break;
@@ -309,7 +309,7 @@ public class Amazon {
                    case 10: viewAllOrders(esql, authorisedUser); break;
                    case 11: viewAllUsers(esql, authorisedUser); break;
                    case 12: updateUser(esql, authorisedUser); break;
-                   case 13: deleteUser(esql, authorisedUser); break;
+                   case 13: adminUpdateProduct(esql, authorisedUser); break;
 
                    case 20: usermenu = false; break;
                    default : System.out.println("Unrecognized choice!"); break;
@@ -548,7 +548,7 @@ public class Amazon {
          System.err.println (e.getMessage());
       }
    }
-   public static void updateProduct(Amazon esql, String authorisedUser) {
+   public static void managerUpdateProduct(Amazon esql, String authorisedUser) {
       try{
          System.out.println("Enter the storeID of a store to update a product from");
          int storeId = readChoice();
@@ -879,22 +879,37 @@ public class Amazon {
    }
        
   
-   public static void deleteUser(Amazon esql, String authorisedUser) {
+   public static void adminUpdateProduct(Amazon esql, String authorisedUser) {
       if(!checkAdminPermission( esql, authorisedUser))
          return;
       try{
-         System.out.println("Enter the userid");
-         int userid = readChoice();
-         if(!checkUserExist(esql, authorisedUser, userid)) return;
-
-         String query = String.format("DELETE FROM users WHERE userid = %s", userid);
+         System.out.println("Enter the storeid");
+         int storeId = readChoice();
+         List<List<String>> store = esql.executeQueryAndReturnResult(String.format("SELECT * FROM Store WHERE storeID = %d;", storeId));
+         if (store.size() == 0){
+            System.out.println("❌ StoreID " + storeId + " does not exist");
+            return;
+         }
+         System.out.println("Enter the productname");
+         String productName = in.readLine();
+         List<List<String>> productInfo = esql.executeQueryAndReturnResult(String.format("SELECT * FROM Product WHERE storeID = %d AND productName = '%s';", storeId, productName));
+         if (productInfo.size() == 0){
+            System.out.println("❌ Product " + productName + " does not exist in storeID " + storeId);
+            return;
+         }
+         System.out.println("Enter the new numberOfUnits");
+         String numberOfUnits = in.readLine();
+         System.out.println("Enter the new pricePerUnit");
+         String pricePerUnit = in.readLine();
+   
+         String query = String.format("UPDATE Product SET numberOfUnits = '%s', pricePerUnit = '%s' WHERE storeid = '%s' AND productName = '%s'", numberOfUnits, pricePerUnit, storeId,productName);
          esql.executeUpdate(query);
       }
       catch(Exception e){
          System.err.println(e.getMessage());
          return;
       }
-      System.out.println("✅ user deleted!!!");
+      System.out.println("✅ product updated!!!");
    }
 
 }//end Amazon
